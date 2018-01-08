@@ -17,7 +17,6 @@ def index():
     response = jsonify({
         'input': string,
         'match': match,
-        'test': 1,
     })
     response.headers.add('Access-Control-Allow-Origin', '*')
 
