@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 
 from phone_numbers.words import WORDS
 from phone_numbers.lib.trie import Trie
+from phone_numbers.lib.sentence_creator import make_sentence_from_numbers
 
 app = Flask(__name__)
 
@@ -12,7 +13,7 @@ def index():
 
     string = request.args['value']
 
-    match = trie.make_sentence_from_numbers(string)
+    match = make_sentence_from_numbers(trie, string)
 
     response = jsonify({
         'input': string,

@@ -1,33 +1,28 @@
-import pytest
+import pickle
 
-from phone_numbers.words import WORDS
-from phone_numbers.lib import trie as module
-
-
-@pytest.mark.parametrize(
-    'string, expected',
-    [
-        ('thisisworking', ['this', 'is', 'working']),
-    ],
-)
-def test_make_sentence_from_string(string, expected):
-    trie = module.Trie(WORDS)
-
-    actual = trie.make_sentence_from_string(string)
-
-    assert actual == expected
+from phone_numbers.lib.trie import Trie, _Element
 
 
-@pytest.mark.parametrize(
-    'string, expected',
-    [
-        ('2679809273', 'copy 80 ward'),
-        ('0003313039', '00033130 ex')
-    ],
-)
-def test_make_sentence_from_numbers(string, expected):
-    trie = module.Trie(WORDS)
+def test_trie():
+    words = ['foo', 'food', 'for']
 
-    actual = trie.make_sentence_from_numbers(string)
+    elementD = _Element(is_word=True)
+    elementD.children = {}
 
-    assert actual == expected
+    elementR = _Element(is_word=True)
+    elementR.children = {}
+
+    elementO2 = _Element(is_word=True)
+    elementO2.children = {'d': elementD}
+
+    elementO1 = _Element(is_word=False)
+    elementO1.children = {'o': elementO2, 'r': elementR}
+
+    elementF = _Element(is_word=False)
+    elementF.children = {'o': elementO1}
+
+    expected = {'f': elementF}
+
+    actual = Trie(words)
+
+    assert pickle.dumps(actual.trie) == pickle.dumps(expected)
