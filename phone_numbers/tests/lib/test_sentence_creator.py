@@ -35,6 +35,8 @@ def test_make_sentence_from_string(string, expected):
         ('0003313039', '00033130 ex'),
         ('0000000000', '0000000000'),
         ('1800837863', '1800 test me'),
+        ('abc1(800)-837-863', '1800 test me'),
+        ('abcdef', ''),
     ],
 )
 def test_make_sentence_from_numbers(string, expected):

@@ -1,4 +1,5 @@
 import itertools
+import re
 
 
 LETTERS_BY_NUMBER = {
@@ -53,10 +54,18 @@ def make_sentence_from_string(trie, string):
 
 def get_best_option(trie, all_combinations):
     best_option = None
+    best_score = 0
     for possible in list(all_combinations):
         words = make_sentence_from_string(trie, ''.join(possible))
-        if not best_option or len(words) < len(best_option):
+        # score = len(max(words, key=lambda x: len(x))) # + len(possible) - len(words)
+        # score = sum([
+        #     1 if len(word) <= 2 else len(word) * (len(word) - 2)
+        #     for word in words
+        # ])
+        score = len(possible) - len(words)
+        if not best_option or score > best_score:
             best_option = words
+            best_score = score
 
     return best_option
 
@@ -79,10 +88,16 @@ def cleanup_sentence(words):
     return(' '.join(new_words))
 
 
+def clean_numbers(numbers):
+    return re.sub("\D", "", ''.join(numbers))
+
+
 def make_sentence_from_numbers(trie, numbers):
+    cleaned_numbers = clean_numbers(numbers)
+
     numbers_as_letters = [
         LETTERS_BY_NUMBER.get(int(number), str(number))
-        for number in numbers
+        for number in cleaned_numbers
     ]
 
     all_combinations = itertools.product(*numbers_as_letters)
