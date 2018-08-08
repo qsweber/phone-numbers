@@ -1,6 +1,8 @@
 import itertools
 import re
+from typing import List
 
+from phone_numbers.lib.trie import Trie
 
 LETTERS_BY_NUMBER = {
     2: ['a', 'b', 'c'],
@@ -20,17 +22,17 @@ NUMBER_BY_LETTER = {
 }
 
 
-def make_sentence_from_string(trie, string, starting_index=0):
+def make_sentence_from_string(trie: Trie, string: str, starting_index: int=0) -> List[str]:
     '''
     Greedily creates words from an input string.
 
     For example, 'thisisworking' -> ['this', 'is', 'working']
     '''
     if not string:
-        return string
+        return []
 
-    words = []
-    words2 = []
+    words: List[str] = []
+    words2: List[str] = []
     longest_word = None
     word = []
     current = trie.trie
@@ -70,15 +72,15 @@ def make_sentence_from_string(trie, string, starting_index=0):
     return words2 + words
 
 
-def make_sentence_from_string_non_greedy(trie, string):
+def make_sentence_from_string_non_greedy(trie: Trie, string: str) -> List[list]:
     return [
         make_sentence_from_string(trie, string, i)
         for i in range(len(string))
     ]
 
 
-def get_best_option(trie, all_combinations):
-    best_option = None
+def get_best_option(trie: Trie, all_combinations: List[tuple]) -> List[str]:
+    best_option: List[str] = []
     best_score = 0
     for possible in list(all_combinations):
         for i in range(len(possible)):
@@ -96,7 +98,7 @@ def get_best_option(trie, all_combinations):
     return best_option
 
 
-def cleanup_sentence(words):
+def cleanup_sentence(words: List[str]) -> str:
     if not words:
         return ''
 
@@ -117,19 +119,19 @@ def cleanup_sentence(words):
     return(' '.join(new_words))
 
 
-def clean_numbers(numbers):
+def _clean_numbers(numbers: str) -> str:
     return re.sub("\D", "", ''.join(numbers))
 
 
-def make_sentence_from_numbers(trie, numbers):
-    cleaned_numbers = clean_numbers(numbers)
+def make_sentence_from_numbers(trie: Trie, numbers: str) -> str:
+    cleaned_numbers = _clean_numbers(numbers)
 
     numbers_as_letters = [
         LETTERS_BY_NUMBER.get(int(number), str(number))
         for number in cleaned_numbers
     ]
 
-    all_combinations = itertools.product(*numbers_as_letters)
+    all_combinations: List[tuple] = list(itertools.product(*numbers_as_letters))
 
     best_option = get_best_option(trie, all_combinations)
 
