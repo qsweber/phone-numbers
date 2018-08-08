@@ -20,18 +20,25 @@ NUMBER_BY_LETTER = {
 }
 
 
-def make_sentence_from_string(trie, string):
+def make_sentence_from_string(trie, string, starting_index=0):
     '''
     Greedily creates words from an input string.
 
     For example, 'thisisworking' -> ['this', 'is', 'working']
     '''
+    if not string:
+        return string
+
     words = []
+    words2 = []
     longest_word = None
     word = []
     current = trie.trie
-    i = 0
-    while i < len(string):
+
+    reached_end = False
+    i = starting_index
+    max_i = len(string) - 1
+    while True:
         letter = string[i]
 
         word.append(letter)
@@ -40,37 +47,59 @@ def make_sentence_from_string(trie, string):
             longest_word = ''.join(word)
             longest_word_index = i
 
-        if (letter in current and (string[i + 1] if i < len(string) - 1 else None in current[letter].children)):
+        if (letter in current and (string[i + 1] if i < max_i else None in current[letter].children)):
             current = current[letter].children
             i = i + 1
         else:
-            words.append(longest_word)
+            if not reached_end:
+                words.append(longest_word)
+            else:
+                words2.append(longest_word)
             word = []
             i = longest_word_index + 1
             current = trie.trie
 
-    return words
+            if i == len(string):
+                reached_end = True
+                i = 0
+                max_i = starting_index - 1
+
+        if reached_end and i == starting_index:
+            break
+
+    return words2 + words
+
+
+def make_sentence_from_string_non_greedy(trie, string):
+    return [
+        make_sentence_from_string(trie, string, i)
+        for i in range(len(string))
+    ]
 
 
 def get_best_option(trie, all_combinations):
     best_option = None
     best_score = 0
     for possible in list(all_combinations):
-        words = make_sentence_from_string(trie, ''.join(possible))
-        # score = len(max(words, key=lambda x: len(x))) # + len(possible) - len(words)
-        # score = sum([
-        #     1 if len(word) <= 2 else len(word) * (len(word) - 2)
-        #     for word in words
-        # ])
-        score = len(possible) - len(words)
-        if not best_option or score > best_score:
-            best_option = words
-            best_score = score
+        for i in range(len(possible)):
+            sentence = make_sentence_from_string(trie, ''.join(possible), i)
+            # score = len(max(words, key=lambda x: len(x))) # + len(possible) - len(words)
+            # score = sum([
+            #     1 if len(word) <= 2 else len(word) * (len(word) - 2)
+            #     for word in words
+            # ])
+            score = len(possible) - len(sentence)
+            if not best_option or score > best_score:
+                best_option = sentence
+                best_score = score
 
     return best_option
 
 
 def cleanup_sentence(words):
+    if not words:
+        return ''
+
     new_words = []
     consecutive_numbers = []
     for word in words:
