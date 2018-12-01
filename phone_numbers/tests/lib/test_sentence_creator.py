@@ -4,13 +4,11 @@ import string
 import pytest
 
 from phone_numbers.words import WORDS
-from phone_numbers.lib.words import get_new_words
 from phone_numbers.lib.trie import Trie
 from phone_numbers.lib import sentence_creator as module
 
 
 trie = Trie(WORDS)
-trie_new = Trie(get_new_words(WORDS))
 
 
 @pytest.mark.parametrize(
@@ -57,21 +55,6 @@ def test_make_sentence_from_string_non_greedy():
 )
 def test_make_sentence_from_numbers(string, expected):
     actual = module.make_sentence_from_numbers(trie, string)
-
-    assert actual == expected
-
-
-@pytest.mark.parametrize(
-    'string, expected',
-    [
-        ('2679809273', 'copy t0ward'),
-        ('0003313039', '00 0dd 1 d0e 9'),
-        ('0000000000', '0000000000'),
-        ('1800837863', '1 t00t drum 3'),
-    ],
-)
-def test_make_sentence_from_numbers_trie_new(string, expected):
-    actual = module.make_sentence_from_numbers(trie_new, string)
 
     assert actual == expected
 
