@@ -22,7 +22,7 @@ NUMBER_BY_LETTER = {
 }
 
 
-def make_sentence_from_string(trie: Trie, string: str, starting_index: int=0) -> List[str]:
+def make_sentence_from_string(trie: Trie, string: str, starting_index: int = 0) -> List[str]:
     '''
     Greedily creates words from an input string.
 
@@ -120,7 +120,7 @@ def cleanup_sentence(words: List[str]) -> str:
 
 
 def _clean_numbers(numbers: str) -> str:
-    return re.sub("\D", "", ''.join(numbers))
+    return re.sub(r'\D', '', ''.join(numbers))
 
 
 def make_sentence_from_numbers(trie: Trie, numbers: str) -> str:
