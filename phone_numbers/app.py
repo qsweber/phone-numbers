@@ -1,9 +1,12 @@
 import datetime
+from decimal import Decimal
 import logging
 
 from flask import Flask, request, jsonify
 
 from phone_numbers.clients.s3 import S3Client
+from phone_numbers.dao.phone_numbers import PhoneNumbersDao
+from phone_numbers.models.phone_numbers import PhoneNumber
 from phone_numbers.words import WORDS
 from phone_numbers.lib.trie import Trie
 from phone_numbers.lib.sentence_creator import make_sentence_from_numbers
@@ -13,6 +16,7 @@ app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 s3_client = S3Client()
+phone_numbers_dao = PhoneNumbersDao()
 
 
 @s3_cache(s3_client, 'qsweber-temp', 'phone-numbers/trie')
@@ -20,27 +24,31 @@ def get_trie():
     return Trie(WORDS)
 
 
-@app.route('/api/v0/match', methods=['GET'])
-def index():
-    time1 = datetime.datetime.now()
+def calculate(phone_number: str) -> PhoneNumber:
+    start_time = datetime.datetime.now()
 
     trie = get_trie()
-    time2 = datetime.datetime.now()
+    result = make_sentence_from_numbers(trie, phone_number)
 
-    string = request.args['value']
+    phone_number = PhoneNumber(
+        phone_number=phone_number,
+        result=result,
+        seconds=round(Decimal((datetime.datetime.now() - start_time).total_seconds()), 3)
+    )
 
-    match = make_sentence_from_numbers(trie, string)
-    time3 = datetime.datetime.now()
+    phone_numbers_dao.create(phone_number)
 
-    logger.info('time1: {}, time2: {}, time3: {}'.format(
-        time1.isoformat(),
-        time2.isoformat(),
-        time3.isoformat(),
-    ))
+    return phone_number
+
+
+@app.route('/api/v0/match', methods=['GET'])
+def index():
+    input_phone_number = request.args['value']
+    phone_number = phone_numbers_dao.read('phone_number', input_phone_number) or calculate(input_phone_number)
 
     response = jsonify({
-        'input': string,
-        'match': match,
+        'input': input_phone_number,
+        'match': phone_number.result,
     })
 
     response.headers.add('Access-Control-Allow-Origin', '*')
