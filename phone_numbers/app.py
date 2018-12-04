@@ -52,7 +52,6 @@ def index():
     response = jsonify({
         'input': input_phone_number,
         'match': phone_number.result,
-        'raw': phone_number._asdict(),
     })
 
     response.headers.add('Access-Control-Allow-Origin', '*')
