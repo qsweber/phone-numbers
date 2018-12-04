@@ -136,3 +136,7 @@ def make_sentence_from_numbers(trie: Trie, numbers: str) -> str:
     best_option = get_best_option(trie, all_combinations)
 
     return cleanup_sentence(best_option)
+
+
+def sanitize_input(input_phone_number: str) -> str:
+    return input_phone_number[0:11]

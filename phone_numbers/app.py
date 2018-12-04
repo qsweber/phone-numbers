@@ -9,7 +9,7 @@ from phone_numbers.dao.phone_numbers import PhoneNumbersDao
 from phone_numbers.models.phone_numbers import PhoneNumber
 from phone_numbers.words import WORDS
 from phone_numbers.lib.trie import Trie
-from phone_numbers.lib.sentence_creator import make_sentence_from_numbers
+from phone_numbers.lib.sentence_creator import make_sentence_from_numbers, sanitize_input
 from phone_numbers.lib.s3_cache import s3_cache
 
 app = Flask(__name__)
@@ -24,16 +24,19 @@ def get_trie():
     return Trie(WORDS)
 
 
-def calculate(phone_number: str) -> PhoneNumber:
+def calculate(input_phone_number: str) -> PhoneNumber:
     start_time = datetime.datetime.now()
 
     trie = get_trie()
-    result = make_sentence_from_numbers(trie, phone_number)
+    input_sanitized = sanitize_input(input_phone_number)
+    result = make_sentence_from_numbers(trie, input_sanitized)
 
     phone_number = PhoneNumber(
-        phone_number=phone_number,
+        phone_number=input_phone_number,
+        phone_number_sanitized=input_sanitized,
         result=result,
-        seconds=round(Decimal((datetime.datetime.now() - start_time).total_seconds()), 3)
+        seconds=round(Decimal((datetime.datetime.now() - start_time).total_seconds()), 3),
+        created_at=datetime.datetime.now(),
     )
 
     phone_numbers_dao.create(phone_number)
@@ -49,6 +52,7 @@ def index():
     response = jsonify({
         'input': input_phone_number,
         'match': phone_number.result,
+        'raw': phone_number._asdict(),
     })
 
     response.headers.add('Access-Control-Allow-Origin', '*')

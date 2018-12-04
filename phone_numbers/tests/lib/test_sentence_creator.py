@@ -64,3 +64,15 @@ def test_never_errors():
         random_numbers_as_string = ''.join(random.choices(list(string.digits), k=10))
         actual = module.make_sentence_from_numbers(trie, random_numbers_as_string)
         assert len(actual) >= len(random_numbers_as_string)
+
+
+@pytest.mark.parametrize(
+    'input_phone_number, expected',
+    [
+        ('123451234512', '12345123451'),
+    ],
+)
+def test_sanitize_input(input_phone_number, expected):
+    actual = module.sanitize_input(input_phone_number)
+
+    assert actual == expected
