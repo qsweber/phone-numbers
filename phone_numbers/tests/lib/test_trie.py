@@ -25,4 +25,4 @@ def test_trie():
 
     actual = Trie(words)
 
-    assert pickle.dumps(actual.trie) == pickle.dumps(expected)
+    assert pickle.dumps(actual.root) == pickle.dumps(expected)
