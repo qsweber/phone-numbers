@@ -20,11 +20,13 @@ trie = Trie(words)
     'string, expected',
     [
         ('2679809273', 'copy 80 ward'),
-        ('0003313039', '000 de 130 ex'),
         ('0000000000', '0000000000'),
         ('1800837863', '1800 test me'),
         ('abc1(800)-837-863', '1800 test me'),
         ('abcdef', ''),
+        ('22738275', 'aardvark'),
+        ('2273827522738275', 'aardvark aardvark'),
+        ('227382758322738275', 'aardvark te aardvark'),  # notice how it doesn't do "aardvark tea ..."
     ],
 )
 def test_make_sentence_from_numbers(string, expected):
