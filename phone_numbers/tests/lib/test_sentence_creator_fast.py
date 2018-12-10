@@ -26,7 +26,7 @@ trie = Trie(words)
         ('abcdef', ''),
         ('22738275', 'aardvark'),
         ('2273827522738275', 'aardvark aardvark'),
-        ('227382758322738275', 'aardvark te aardvark'),  # notice how it doesn't do "aardvark tea ..."
+        ('227382758326455466', 'aardvark tea million'),  # notice how it doesn't do "aardvark team ..."
     ],
 )
 def test_make_sentence_from_numbers(string, expected):
