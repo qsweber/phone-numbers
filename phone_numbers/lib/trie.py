@@ -11,8 +11,7 @@ class Trie:
         for word in words:
             trie = self._add_word_to_trie(trie, word)
 
-        # TODO: can I do `self = trie`
-        self.trie = trie
+        self.root = trie
 
     def _add_word_to_trie(self, trie, word):
         current = trie
