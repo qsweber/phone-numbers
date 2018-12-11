@@ -29,10 +29,12 @@ def get_trie():
     return Trie(words)
 
 
+trie = get_trie()
+
+
 def calculate(input_phone_number: str) -> PhoneNumber:
     start_time = datetime.datetime.now()
 
-    trie = get_trie()
     result = make_sentence_from_numbers(trie, input_phone_number)
 
     phone_number = PhoneNumber(
