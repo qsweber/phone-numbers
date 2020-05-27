@@ -5,7 +5,6 @@ import logging
 from flask import Flask, request, jsonify
 
 from phone_numbers.clients.s3 import S3Client
-from phone_numbers.dao.phone_numbers import PhoneNumbersDao
 from phone_numbers.models.phone_numbers import PhoneNumber
 from phone_numbers.lib.trie import Trie
 from phone_numbers.lib.sentence_creator_fast import make_sentence_from_numbers, clean_input
@@ -15,7 +14,6 @@ app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 s3_client = S3Client()
-phone_numbers_dao = PhoneNumbersDao()
 
 
 @s3_cache(s3_client, 'qsweber-temp', 'phone-numbers/trie-extended')
@@ -45,15 +43,13 @@ def calculate(input_phone_number: str) -> PhoneNumber:
         created_at=datetime.datetime.now(),
     )
 
-    phone_numbers_dao.create(phone_number)
-
     return phone_number
 
 
 @app.route('/api/v0/match', methods=['GET'])
 def index():
     input_phone_number = request.args['value']
-    phone_number = phone_numbers_dao.read('phone_number', input_phone_number) or calculate(input_phone_number)
+    phone_number = calculate(input_phone_number)
 
     response = jsonify({
         'input': input_phone_number,
