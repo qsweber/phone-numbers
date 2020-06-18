@@ -7,7 +7,7 @@
         "memory_size": 2048,
         "cors": true,
         "runtime": "python3.8",
-        "s3_bucket": "zappa-w4zj9g9gr",
+        "s3_bucket": "zappa-tsh36hhes",
         "log_level": "INFO",
         "timeout_seconds": 55,
         "events": [],

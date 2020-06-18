@@ -1,19 +1,23 @@
+import typing
+
 
 class _Element:
-    def __init__(self, is_word=False):
+    def __init__(self, is_word: bool = False) -> None:
         self.is_word = is_word
-        self.children = {}
+        self.children: typing.Dict[str, _Element] = {}
 
 
 class Trie:
-    def __init__(self, words):
-        trie = {}
+    def __init__(self, words: typing.List[str]) -> None:
+        trie: typing.Dict[str, _Element] = {}
         for word in words:
             trie = self._add_word_to_trie(trie, word)
 
         self.root = trie
 
-    def _add_word_to_trie(self, trie, word):
+    def _add_word_to_trie(
+        self, trie: typing.Dict[str, _Element], word: str
+    ) -> typing.Dict[str, _Element]:
         current = trie
         for index, letter in enumerate(word):
             if index == len(word) - 1:
