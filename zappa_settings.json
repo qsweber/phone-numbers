@@ -1,0 +1,11 @@
+{
+    "production": {
+        "app_function": "phone_numbers.app.app",
+        "aws_region": "us-west-2",
+        "project_name": "phone-numbers",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa-tsh36hhes",
+        "memory_size": 2048,
+        "cors": true
+    }
+}
