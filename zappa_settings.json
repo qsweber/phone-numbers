@@ -1,11 +1,18 @@
 {
+
     "production": {
-        "app_function": "phone_numbers.app.app",
+        "app_function": "src.phone_numbers.app.http.app",
         "aws_region": "us-west-2",
         "project_name": "phone-numbers",
-        "runtime": "python3.6",
-        "s3_bucket": "zappa-tsh36hhes",
         "memory_size": 2048,
-        "cors": true
+        "cors": true,
+        "runtime": "python3.8",
+        "s3_bucket": "zappa-w4zj9g9gr",
+        "log_level": "INFO",
+        "timeout_seconds": 55,
+        "events": [],
+        "aws_environment_variables": {
+            "STAGE": "PROD"
+        }
     }
 }
