@@ -25,11 +25,6 @@ def get_trie() -> Trie:
     return Trie(words)
 
 
-trie = service_context.clients.s3.get_or_create_file(
-    "qsweber-temp", "phone-numbers/trie-extended", get_trie
-)
-
-
 @app.route("/api/v0/status", methods=["GET"])
 def status() -> Response:
     logger.info("recieved request with args {}".format(json.dumps(request.args)))
@@ -42,6 +37,9 @@ def status() -> Response:
 
 @app.route("/api/v0/match", methods=["GET"])
 def match() -> Response:
+    trie = service_context.clients.s3.get_or_create_file(
+        "qsweber-temp", "phone-numbers/trie-extended", get_trie
+    )
     input_phone_number = request.args["value"]
     result = make_sentence_from_numbers(trie, input_phone_number)
 
