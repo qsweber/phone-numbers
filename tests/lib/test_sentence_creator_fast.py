@@ -7,7 +7,7 @@ from phone_numbers.lib.trie import Trie
 from phone_numbers.lib import sentence_creator_fast as module
 
 
-with open("/usr/share/dict/words") as fh:
+with open("words.txt") as fh:
     words = [word.strip() for word in fh.readlines()]
 
 trie = Trie(words)

@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_trie() -> Trie:
-    with open("/usr/share/dict/words") as fh:
+    with open("words.txt") as fh:
         words = [word.strip() for word in fh.readlines()]
 
     return Trie(words)
