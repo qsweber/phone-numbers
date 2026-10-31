@@ -103,7 +103,7 @@ jobs:
       - name: Verify deployed API (/ping)
         run: |
           STACK_NAME=phone-numbers-${{ inputs.stack }}
-          CUSTOM_DOMAIN_URL=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$AWS_REGION" --query "Stacks[0].Outputs[?OutputKey=='CustomDomainURL'].OutputValue" --output text)
+          CUSTOM_DOMAIN_URL=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "${AWS_REGION:-us-west-2}" --query "Stacks[0].Outputs[?OutputKey=='CustomDomainURL'].OutputValue" --output text)
           PING_URL=$(echo "$CUSTOM_DOMAIN_URL" | sed 's|/{message}$|/ping|')
           PING_URL="${PING_URL}?cb=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "Calling $PING_URL"
