@@ -25,7 +25,7 @@ And you should get this output:
 
 It first transforms a dictionary into a [Trie](https://en.wikipedia.org/wiki/Trie). Then it transforms your phone number into all possible letter combinations. Finally, it uses the Trie to determine the best representation of your phone number as a series of words.
 
-The dictionary (`internal/words/words.txt`) is embedded in the Lambda binary and the Trie is built once per cold start.
+The dictionary (`internal/words/words.txt`, built from [SCOWL](http://wordlist.aspell.net/) size 50; see `internal/words/README.md`) is embedded in the Lambda binary and the Trie is built once per cold start.
 
 ## Layout
 

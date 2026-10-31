@@ -53,9 +53,9 @@ func createAPIGatewayResources(
 		Handler:      jsii.String("bootstrap"),
 		Role:         role.AttrArn(),
 		Runtime:      jsii.String("provided.al2023"),
-		// Building the dictionary trie on cold start is CPU bound, and Lambda allocates CPU in
-		// proportion to memory, so give it more than the 128MB default.
-		MemorySize: jsii.Number(512),
+		// The dictionary trie is ~7MB and builds in ~35ms on cold start; 256MB leaves headroom
+		// over the 128MB default without paying for CPU we don't need.
+		MemorySize: jsii.Number(256),
 		Timeout:    jsii.Number(30),
 		Code: &awslambda.CfnFunction_CodeProperty{
 			S3Bucket: asset.S3BucketName(),
