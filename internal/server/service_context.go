@@ -13,7 +13,7 @@ type ServiceContext struct {
 }
 
 // NewServiceContext builds the dictionary trie from the embedded word list.
-// This happens once per Lambda cold start, which replaces the pickled trie the
+// This happens once per Lambda cold start, in main(), which replaces the pickled trie the
 // Python version cached in S3.
 func NewServiceContext() ServiceContext {
 	start := time.Now()
