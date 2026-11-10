@@ -36,10 +36,6 @@ func New(serviceContext ServiceContext) Server {
 }
 
 func (s *ServerImpl) Handle(ctx context.Context, req Request) Response {
-	if req.Method == "OPTIONS" {
-		return Response{StatusCode: 200, Headers: preflightHeaders()}
-	}
-
 	switch req.Path {
 	case "/v1/ping", "/api/v0/status":
 		return s.Ping()
@@ -50,20 +46,14 @@ func (s *ServerImpl) Handle(ctx context.Context, req Request) Response {
 	}
 }
 
+// corsHeaders are set on every response for clients that call the server directly. Behind API
+// Gateway, the HTTP API's CORS configuration (cdk/apigateway.go) answers preflights and takes
+// precedence over these headers.
 func corsHeaders() map[string]string {
 	return map[string]string{
 		"Access-Control-Allow-Origin": "*",
 		"Cache-Control":               "no-store",
 		"Content-Type":                "application/json",
-	}
-}
-
-func preflightHeaders() map[string]string {
-	return map[string]string{
-		"Access-Control-Allow-Origin":  "*",
-		"Access-Control-Allow-Methods": "GET, OPTIONS",
-		"Access-Control-Allow-Headers": "Content-Type",
-		"Cache-Control":                "no-store",
 	}
 }
 
