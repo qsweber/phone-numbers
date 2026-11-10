@@ -55,14 +55,6 @@ var (
 
 const corsMaxAgeSeconds = 86400
 
-// apiRoutes are the only routes that reach the Lambda: the current /v1 API and the legacy
-// /api/v0 paths. Anything else (scanners probing /.env, /wp-login.php and so on) gets a 404 from
-// API Gateway without an invocation.
-var apiRoutes = []struct{ id, routeKey string }{
-	{id: "HttpApiV1Route", routeKey: "ANY /v1/{proxy+}"},
-	{id: "HttpApiLegacyV0Route", routeKey: "ANY /api/v0/{proxy+}"},
-}
-
 type APIGatewayResources struct {
 	Function awslambda.CfnFunction
 	Api      awsapigatewayv2.CfnApi
@@ -98,11 +90,13 @@ func createAPIGatewayResources(
 	function.AddDependency(role)
 
 	// An HTTP API (API Gateway v2). API Gateway handles CORS preflights and rejects paths outside
-	// /v1/ and /api/v0/ before they reach the Lambda; routing within them happens in the Go handler.
+	// /v1/ before they reach the Lambda; routing within /v1/ happens in the Go handler.
+	// The default execute-api endpoint is disabled, so the custom domain is the only way in.
 	api := awsapigatewayv2.NewCfnApi(scope, jsii.String("HttpApi"), &awsapigatewayv2.CfnApiProps{
-		Name:         jsii.String(projectStackName + "-api"),
-		Description:  jsii.String("An HTTP API for the " + projectStackName + " function"),
-		ProtocolType: jsii.String("HTTP"),
+		Name:                      jsii.String(projectStackName + "-api"),
+		Description:               jsii.String("An HTTP API for the " + projectStackName + " function"),
+		ProtocolType:              jsii.String("HTTP"),
+		DisableExecuteApiEndpoint: jsii.Bool(true),
 		CorsConfiguration: &awsapigatewayv2.CfnApi_CorsProperty{
 			AllowOrigins: jsii.Strings("*"),
 			AllowMethods: jsii.Strings(corsAllowMethods...),
@@ -138,14 +132,14 @@ func createAPIGatewayResources(
 		},
 	})
 
-	for _, r := range apiRoutes {
-		route := awsapigatewayv2.NewCfnRoute(scope, jsii.String(r.id), &awsapigatewayv2.CfnRouteProps{
-			ApiId:    api.Ref(),
-			RouteKey: jsii.String(r.routeKey),
-			Target:   jsii.String(fmt.Sprintf("integrations/%s", *integration.Ref())),
-		})
-		stage.AddDependency(route)
-	}
+	// Only /v1/... reaches the Lambda. Anything else (scanners probing /.env, /wp-login.php and
+	// so on) gets a 404 from API Gateway without an invocation.
+	route := awsapigatewayv2.NewCfnRoute(scope, jsii.String("HttpApiV1Route"), &awsapigatewayv2.CfnRouteProps{
+		ApiId:    api.Ref(),
+		RouteKey: jsii.String("ANY /v1/{proxy+}"),
+		Target:   jsii.String(fmt.Sprintf("integrations/%s", *integration.Ref())),
+	})
+	stage.AddDependency(route)
 
 	awslambda.NewCfnPermission(scope, jsii.String("APIPermission"), &awslambda.CfnPermissionProps{
 		Action:       jsii.String("lambda:InvokeFunction"),

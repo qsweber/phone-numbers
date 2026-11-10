@@ -37,9 +37,9 @@ func New(serviceContext ServiceContext) Server {
 
 func (s *ServerImpl) Handle(ctx context.Context, req Request) Response {
 	switch req.Path {
-	case "/v1/ping", "/api/v0/status":
+	case "/v1/ping":
 		return s.Ping()
-	case "/v1/match", "/api/v0/match":
+	case "/v1/match":
 		return s.Match(req)
 	default:
 		return errorResponse(404, errors.New("route not found"))

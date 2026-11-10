@@ -13,7 +13,7 @@ func newTestServer() Server {
 }
 
 func TestPing(t *testing.T) {
-	for _, path := range []string{"/v1/ping", "/api/v0/status"} {
+	for _, path := range []string{"/v1/ping"} {
 		resp := newTestServer().Handle(context.Background(), Request{Method: "GET", Path: path})
 		if resp.StatusCode != 200 {
 			t.Fatalf("%s: expected 200, got %d", path, resp.StatusCode)
@@ -30,7 +30,7 @@ func TestPing(t *testing.T) {
 }
 
 func TestMatch(t *testing.T) {
-	for _, path := range []string{"/v1/match", "/api/v0/match"} {
+	for _, path := range []string{"/v1/match"} {
 		resp := newTestServer().Handle(context.Background(), Request{
 			Method:          "GET",
 			Path:            path,

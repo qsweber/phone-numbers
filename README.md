@@ -38,12 +38,11 @@ The dictionary (`internal/words/words.txt`, built from [SCOWL](http://wordlist.a
 
 ## Endpoints
 
-- `GET /v1/ping`: health check (also served at the legacy `/api/v0/status`)
-- `GET /v1/match?value=<phone number>`: returns the best match (also served at the legacy `/api/v0/match`)
+- `GET /v1/ping`: health check
+- `GET /v1/match?value=<phone number>`: returns the best match
 
-The API is an API Gateway HTTP API (`cdk/apigateway.go`). Only `/v1/...` and `/api/v0/...` reach the
-Lambda; other paths get a `404` from API Gateway, and CORS preflights are answered by API Gateway
-too. The stage is throttled at 50 requests/second (bursts up to 100) and the Lambda's reserved
+The API is an API Gateway HTTP API (`cdk/apigateway.go`). Only `/v1/...` reaches the Lambda; other
+paths get a `404` from API Gateway, and CORS preflights are answered by API Gateway too. The stage is throttled at 50 requests/second (bursts up to 100) and the Lambda's reserved
 concurrency is 20. Each request is logged as one JSON line both in the
 `/aws/apigateway/phone-numbers-<env>-api-access` log group and, for requests that reach the
 Lambda, in `/phone-numbers-<env>/apigateway-function`. Log groups keep 30 days of logs.
